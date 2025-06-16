@@ -1,39 +1,29 @@
+<!-- Fixed Simplified Vendor Card Component for Budibase -->
 <script>
   import { getContext, createEventDispatcher } from "svelte"
   
-  // Budibase SDK context
+  // Required Budibase SDK context
   const { styleable, Provider } = getContext("sdk")
   const component = getContext("component")
   const dispatch = createEventDispatcher()
   
-  // Component props from schema
+  // Props that need to be passed from Budibase
   export let dataProvider
-  export let columns = 4
-  export let cardHeight = "medium"
-  export let showAddButton = true
-  export let addButtonText = "Add New Vendor"
+  export let cardStyle = 'elevated'
+  export let cardHeight = 'medium'
   export let onVendorClick
-  export let onAddVendor
-  export let defaultImage = ""
-  export let showProfilePics = true
-  export let cardStyle = "elevated"
+  export let defaultImage = 'https://pcmasfomyhqapaaaxzby.supabase.co/storage/v1/object/public/vendor-profile-pics/null_image.png'
   
-  // Extract data from provider
+  // Extract data from provider (Budibase pattern)
   $: vendors = dataProvider?.rows || []
   $: loading = dataProvider?.loading || false
   $: error = dataProvider?.error || null
-  
-  // Calculate grid layout
-  $: gridStyle = `grid-template-columns: repeat(${columns}, 1fr)`
-  $: totalSlots = Math.ceil((vendors.length + (showAddButton ? 1 : 0)) / columns) * columns
-  $: emptySlots = totalSlots - vendors.length - (showAddButton ? 1 : 0)
   
   // Provide context for child components
   $: dataContext = {
     vendors,
     loading,
-    error,
-    selectedVendor: null
+    error
   }
   
   function handleVendorClick(vendor) {
@@ -42,33 +32,9 @@
       onVendorClick({ vendor })
     }
   }
-  
-  function handleAddVendor() {
-    dispatch('addVendor')
-    if (onAddVendor) {
-      onAddVendor()
-    }
-  }
-  
-  function getImageUrl(vendor) {
-    if (!showProfilePics) return null
-    return vendor.image_url || defaultImage || null
-  }
-  
-  function getVendorType(vendor) {
-    return vendor.vendor_type || "Vendor"
-  }
-  
-  function formatPhoneNumber(phone) {
-    if (!phone) return ""
-    const phoneStr = phone.toString()
-    if (phoneStr.length === 10) {
-      return `(${phoneStr.slice(0,3)}) ${phoneStr.slice(3,6)}-${phoneStr.slice(6)}`
-    }
-    return phoneStr
-  }
 </script>
 
+<!-- Required Budibase wrapper with styleable directive -->
 <div use:styleable={$component.styles} class="vendor-grid-container">
   <Provider data={dataContext}>
     {#if loading}
@@ -81,92 +47,37 @@
         <p class="error-message">Error loading vendors: {error}</p>
       </div>
     {:else}
-      <div class="vendor-grid" style={gridStyle}>
-        <!-- Vendor Cards -->
-        {#each vendors as vendor}
+      <div class="vendor-grid">
+        {#each vendors as vendor, index}
           <div 
-            class="vendor-card {cardStyle} {cardHeight}"
+            class="vendor-card {cardStyle} {cardHeight} {vendor.is_booked ? 'booked' : 'not-booked'}"
+            role="button"
+            tabindex="0"
             on:click={() => handleVendorClick(vendor)}
             on:keydown={(e) => e.key === 'Enter' && handleVendorClick(vendor)}
-            role="button"
-            tabindex="0"
             aria-label="View details for {vendor.vendor_name}"
           >
-            <div class="card-content">
-              <!-- Profile Picture Section -->
-              {#if showProfilePics}
-                <div class="image-section">
-                  {#if getImageUrl(vendor)}
-                    <img 
-                      src={getImageUrl(vendor)} 
-                      alt="Profile for {vendor.vendor_name}"
-                      class="vendor-image"
-                      loading="lazy"
-                    />
-                  {:else}
-                    <div class="image-placeholder">
-                      <svg viewBox="0 0 24 24" class="placeholder-icon">
-                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-                      </svg>
-                    </div>
-                  {/if}
-                </div>
-              {/if}
+            <!-- Profile Picture -->
+            <div class="vendor-image">
+              <img 
+                src={vendor.image_url || defaultImage || '/default-vendor.png'} 
+                alt="{vendor.vendor_name} profile"
+                loading="lazy"
+                on:error={(e) => { e.target.src = defaultImage || '/default-vendor.png'; }}
+              />
+            </div>
+            
+            <!-- Vendor Information -->
+            <div class="vendor-info">
+              <h3 class="vendor-name">{vendor.vendor_name}</h3>
+              <p class="contact-name">{vendor.contact_name || 'Contact not available'}</p>
               
-              <!-- Vendor Information -->
-              <div class="info-section">
-                <h3 class="vendor-name">{vendor.vendor_name || "Unnamed Vendor"}</h3>
-                
-                {#if vendor.contact_name}
-                  <p class="contact-name">{vendor.contact_name}</p>
-                {/if}
-                
-                <p class="vendor-type">{getVendorType(vendor)}</p>
-                
-                {#if vendor.phone_number}
-                  <p class="phone-number">{formatPhoneNumber(vendor.phone_number)}</p>
-                {/if}
-                
-                {#if vendor.email}
-                  <p class="email">{vendor.email}</p>
-                {/if}
-                
-                {#if vendor.quoted_amount}
-                  <p class="quoted-amount">${vendor.quoted_amount.toLocaleString()}</p>
-                {/if}
-                
-                {#if vendor.is_booked}
-                  <div class="booked-badge">Booked</div>
-                {/if}
+              <!-- Booking Status Indicator -->
+              <div class="booking-status {vendor.is_booked ? 'status-booked' : 'status-not-booked'}">
+                {vendor.is_booked ? 'BOOKED' : 'NOT BOOKED'}
               </div>
             </div>
           </div>
-        {/each}
-        
-        <!-- Add Vendor Button -->
-        {#if showAddButton}
-          <div 
-            class="add-vendor-card {cardStyle} {cardHeight}"
-            on:click={handleAddVendor}
-            on:keydown={(e) => e.key === 'Enter' && handleAddVendor()}
-            role="button"
-            tabindex="0"
-            aria-label="Add new vendor"
-          >
-            <div class="add-content">
-              <div class="add-icon">
-                <svg viewBox="0 0 24 24">
-                  <path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/>
-                </svg>
-              </div>
-              <p class="add-text">{addButtonText}</p>
-            </div>
-          </div>
-        {/if}
-        
-        <!-- Empty slots for grid alignment -->
-        {#each Array(emptySlots) as _}
-          <div class="empty-slot"></div>
         {/each}
       </div>
     {/if}
@@ -184,8 +95,11 @@
   
   .vendor-grid {
     display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
     gap: 1.5rem;
     width: 100%;
+    max-width: 1400px;
+    margin: 0 auto;
   }
   
   /* Loading States */
@@ -223,249 +137,175 @@
     font-weight: 500;
   }
   
-  /* Card Styles */
-  .vendor-card, .add-vendor-card {
+  .vendor-card {
     background: white;
     border-radius: 12px;
-    overflow: hidden;
     cursor: pointer;
-    transition: all 0.3s ease;
+    transition: all 0.2s ease;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
     position: relative;
+    min-height: 240px;
+    max-height: 400px;
   }
   
-  /* Card Style Variants */
-  .elevated {
+  /* Card Styles */
+  .vendor-card.elevated {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   }
   
-  .elevated:hover {
-    transform: translateY(-4px);
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  .vendor-card.outlined {
+    border: 1px solid #e0e0e0;
   }
   
-  .outlined {
-    border: 2px solid #e1e5e9;
+  .vendor-card.flat {
+    border: none;
+    box-shadow: none;
   }
   
-  .outlined:hover {
-    border-color: #3498db;
-    transform: translateY(-2px);
+  /* Card Heights */
+  .vendor-card.small {
+    min-height: 200px;
+    max-height: 280px;
   }
   
-  .flat {
-    background: #f8f9fa;
-    border: 1px solid #dee2e6;
+  .vendor-card.medium {
+    min-height: 240px;
+    max-height: 350px;
   }
   
-  .flat:hover {
-    background: #e9ecef;
-  }
-  
-  /* Card Height Variants */
-  .small {
-    min-height: 180px;
-  }
-  
-  .medium {
-    min-height: 220px;
-  }
-  
-  .large {
+  .vendor-card.large {
     min-height: 280px;
+    max-height: 400px;
   }
   
-  /* Card Content */
-  .card-content {
-    padding: 1.25rem;
+  /* Booking Status Colors */
+  .vendor-card.not-booked {
+    border-left: 4px solid #f44336;
+  }
+  
+  .vendor-card.booked {
+    border-left: 4px solid #4caf50;
+  }
+  
+  /* Hover Effects */
+  .vendor-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  }
+  
+  .vendor-card:focus {
+    outline: 2px solid #2196f3;
+    outline-offset: 2px;
+  }
+  
+  /* Image Section */
+  .vendor-image {
+    flex: 1 1 auto;
+    min-height: 120px;
+    max-height: 200px;
+    overflow: hidden;
+    position: relative;
+  }
+  
+  .vendor-image img {
+    width: 100%;
     height: 100%;
+    object-fit: cover;
+    transition: transform 0.2s ease;
+  }
+  
+  .vendor-card:hover .vendor-image img {
+    transform: scale(1.05);
+  }
+  
+  /* Info Section */
+  .vendor-info {
+    padding: 16px;
     display: flex;
     flex-direction: column;
-  }
-  
-  .image-section {
-    display: flex;
-    justify-content: center;
-    margin-bottom: 1rem;
-  }
-  
-  .vendor-image {
-    width: 64px;
-    height: 64px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 3px solid #f1f3f4;
-  }
-  
-  .image-placeholder {
-    width: 64px;
-    height: 64px;
-    border-radius: 50%;
-    background: #f1f3f4;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
-  
-  .placeholder-icon {
-    width: 32px;
-    height: 32px;
-    fill: #9aa0a6;
-  }
-  
-  .info-section {
-    flex: 1;
-    text-align: center;
+    gap: 8px;
+    background: white;
+    flex: 0 0 auto;
+    min-height: 100px;
   }
   
   .vendor-name {
     font-size: 1.1rem;
     font-weight: 600;
-    color: #1a1a1a;
-    margin: 0 0 0.5rem 0;
+    margin: 0;
+    color: #333;
     line-height: 1.3;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
   
   .contact-name {
     font-size: 0.9rem;
-    color: #5f6368;
-    margin: 0 0 0.25rem 0;
-  }
-  
-  .vendor-type {
-    font-size: 0.85rem;
-    color: #3498db;
-    font-weight: 500;
-    margin: 0 0 0.5rem 0;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
-  
-  .phone-number {
-    font-size: 0.8rem;
-    color: #5f6368;
-    margin: 0 0 0.25rem 0;
-  }
-  
-  .email {
-    font-size: 0.8rem;
-    color: #5f6368;
-    margin: 0 0 0.5rem 0;
-    word-break: break-word;
-  }
-  
-  .quoted-amount {
-    font-size: 0.9rem;
-    font-weight: 600;
-    color: #27ae60;
-    margin: 0.5rem 0 0 0;
-  }
-  
-  .booked-badge {
-    position: absolute;
-    top: 0.75rem;
-    right: 0.75rem;
-    background: #27ae60;
-    color: white;
-    font-size: 0.7rem;
-    font-weight: 600;
-    padding: 0.25rem 0.5rem;
-    border-radius: 12px;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-  }
-  
-  /* Add Vendor Card */
-  .add-vendor-card {
-    border: 2px dashed #cbd5e0;
-    background: #f7fafc;
-  }
-  
-  .add-vendor-card:hover {
-    border-color: #3498db;
-    background: #ebf8ff;
-    transform: translateY(-2px);
-  }
-  
-  .add-content {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    height: 100%;
-    padding: 2rem;
-    text-align: center;
-  }
-  
-  .add-icon {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    background: #3498db;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin-bottom: 1rem;
-  }
-  
-  .add-icon svg {
-    width: 24px;
-    height: 24px;
-    fill: white;
-  }
-  
-  .add-text {
-    font-size: 0.9rem;
-    font-weight: 500;
-    color: #4a5568;
+    color: #666;
     margin: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
   
-  .empty-slot {
-    /* Invisible placeholder for grid alignment */
+  /* Booking Status Badge */
+  .booking-status {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 8px 12px;
+    border-radius: 4px;
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 8px;
+    align-self: stretch;
+  }
+  
+  .status-booked {
+    background-color: #e8f5e8;
+    color: #2e7d32;
+  }
+  
+  .status-not-booked {
+    background-color: #ffebee;
+    color: #c62828;
   }
   
   /* Responsive Design */
-  @media (max-width: 1200px) {
-    .vendor-grid {
-      grid-template-columns: repeat(3, 1fr) !important;
-    }
-  }
-  
   @media (max-width: 768px) {
     .vendor-grid {
-      grid-template-columns: repeat(2, 1fr) !important;
-      gap: 1rem;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
     }
     
-    .vendor-grid-container {
-      padding: 0.75rem;
+    .vendor-card {
+      height: auto;
+      min-height: 200px;
     }
     
-    .card-content {
-      padding: 1rem;
+    .vendor-image {
+      height: 140px;
+    }
+    
+    .vendor-info {
+      height: auto;
+      padding: 12px;
     }
     
     .vendor-name {
       font-size: 1rem;
     }
+    
+    .contact-name {
+      font-size: 0.85rem;
+    }
   }
   
   @media (max-width: 480px) {
     .vendor-grid {
-      grid-template-columns: 1fr !important;
+      grid-template-columns: 1fr;
     }
-  }
-  
-  /* Focus and Accessibility */
-  .vendor-card:focus,
-  .add-vendor-card:focus {
-    outline: 2px solid #3498db;
-    outline-offset: 2px;
-  }
-  
-  .vendor-card:focus-visible,
-  .add-vendor-card:focus-visible {
-    outline: 2px solid #3498db;
-    outline-offset: 2px;
   }
 </style>

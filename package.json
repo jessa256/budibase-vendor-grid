@@ -1,7 +1,7 @@
 {
   "name": "wedding-vendor-grid",
-  "version": "1.0.0",
-  "description": "A responsive wedding vendor management grid component for Budibase with Supabase integration",
+  "version": "1.1.0",
+  "description": "A simplified responsive wedding vendor management grid component for Budibase with Supabase integration",
   "main": "dist/plugin.min.js",
   "module": "dist/plugin.min.js",
   "svelte": "src/index.js",
@@ -28,7 +28,8 @@
     "svelte",
     "supabase",
     "responsive",
-    "accessible"
+    "accessible",
+    "simplified"
   ],
   "author": {
     "name": "Jessica Clark",
@@ -93,49 +94,6 @@
       "src/**/*.{js,svelte}",
       "!src/**/*.test.{js,svelte}",
       "!src/**/*.spec.{js,svelte}"
-    ]
-  },
-  "eslintConfig": {
-    "extends": [
-      "eslint:recommended"
-    ],
-    "plugins": [
-      "svelte"
-    ],
-    "overrides": [
-      {
-        "files": [
-          "*.svelte"
-        ],
-        "processor": "svelte/svelte"
-      }
-    ],
-    "parserOptions": {
-      "ecmaVersion": 2022,
-      "sourceType": "module"
-    },
-    "env": {
-      "browser": true,
-      "es6": true,
-      "node": true
-    }
-  },
-  "prettier": {
-    "semi": false,
-    "singleQuote": true,
-    "trailingComma": "es5",
-    "tabWidth": 2,
-    "useTabs": false,
-    "plugins": [
-      "prettier-plugin-svelte"
-    ],
-    "overrides": [
-      {
-        "files": "*.svelte",
-        "options": {
-          "parser": "svelte"
-        }
-      }
     ]
   }
 }

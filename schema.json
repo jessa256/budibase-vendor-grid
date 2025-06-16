@@ -3,8 +3,8 @@
   "metadata": {},
   "schema": {
     "name": "wedding-vendor-grid",
-    "friendlyName": "Wedding Vendor Grid",
-    "description": "A responsive grid component for displaying wedding vendors with profile pictures, contact information, and booking status",
+    "friendlyName": "Wedding Vendor Grid (Simplified)",
+    "description": "A simplified responsive grid component for displaying wedding vendors with dynamic card layouts, profile pictures, and booking status",
     "icon": "GridThree",
     "hasChildren": true,
     "settings": [
@@ -13,14 +13,6 @@
         "label": "Vendor Data",
         "key": "dataProvider",
         "required": true
-      },
-      {
-        "type": "number",
-        "key": "columns",
-        "label": "Columns",
-        "defaultValue": 4,
-        "min": 1,
-        "max": 6
       },
       {
         "type": "select",
@@ -63,28 +55,11 @@
         ]
       },
       {
-        "type": "boolean",
-        "key": "showAddButton",
-        "label": "Show Add Vendor Button",
-        "defaultValue": true
-      },
-      {
-        "type": "text",
-        "key": "addButtonText",
-        "label": "Add Button Text",
-        "defaultValue": "Add New Vendor"
-      },
-      {
-        "type": "boolean",
-        "key": "showProfilePics",
-        "label": "Show Profile Pictures",
-        "defaultValue": true
-      },
-      {
         "type": "text",
         "key": "defaultImage",
         "label": "Default Profile Image URL",
-        "placeholder": "https://example.com/default-avatar.png"
+        "placeholder": "https://example.com/default-avatar.png",
+        "defaultValue": "https://pcmasfomyhqapaaaxzby.supabase.co/storage/v1/object/public/vendor-profile-pics/null_image.png"
       },
       {
         "type": "event",
@@ -96,11 +71,6 @@
             "key": "vendor"
           }
         ]
-      },
-      {
-        "type": "event",
-        "label": "On Add Vendor",
-        "key": "onAddVendor"
       }
     ],
     "context": [
@@ -121,11 +91,6 @@
             "label": "Error",
             "key": "error",
             "type": "string"
-          },
-          {
-            "label": "Selected Vendor",
-            "key": "selectedVendor",
-            "type": "object"
           }
         ]
       }
