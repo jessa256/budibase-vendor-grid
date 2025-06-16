@@ -1,0 +1,134 @@
+{
+  "type": "component",
+  "metadata": {},
+  "schema": {
+    "name": "wedding-vendor-grid",
+    "friendlyName": "Wedding Vendor Grid",
+    "description": "A responsive grid component for displaying wedding vendors with profile pictures, contact information, and booking status",
+    "icon": "GridThree",
+    "hasChildren": true,
+    "settings": [
+      {
+        "type": "dataProvider",
+        "label": "Vendor Data",
+        "key": "dataProvider",
+        "required": true
+      },
+      {
+        "type": "number",
+        "key": "columns",
+        "label": "Columns",
+        "defaultValue": 4,
+        "min": 1,
+        "max": 6
+      },
+      {
+        "type": "select",
+        "key": "cardHeight",
+        "label": "Card Height",
+        "defaultValue": "medium",
+        "options": [
+          {
+            "label": "Small",
+            "value": "small"
+          },
+          {
+            "label": "Medium", 
+            "value": "medium"
+          },
+          {
+            "label": "Large",
+            "value": "large"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "key": "cardStyle",
+        "label": "Card Style",
+        "defaultValue": "elevated",
+        "options": [
+          {
+            "label": "Elevated",
+            "value": "elevated"
+          },
+          {
+            "label": "Outlined",
+            "value": "outlined"
+          },
+          {
+            "label": "Flat",
+            "value": "flat"
+          }
+        ]
+      },
+      {
+        "type": "boolean",
+        "key": "showAddButton",
+        "label": "Show Add Vendor Button",
+        "defaultValue": true
+      },
+      {
+        "type": "text",
+        "key": "addButtonText",
+        "label": "Add Button Text",
+        "defaultValue": "Add New Vendor"
+      },
+      {
+        "type": "boolean",
+        "key": "showProfilePics",
+        "label": "Show Profile Pictures",
+        "defaultValue": true
+      },
+      {
+        "type": "text",
+        "key": "defaultImage",
+        "label": "Default Profile Image URL",
+        "placeholder": "https://example.com/default-avatar.png"
+      },
+      {
+        "type": "event",
+        "label": "On Vendor Click",
+        "key": "onVendorClick",
+        "context": [
+          {
+            "label": "Vendor",
+            "key": "vendor"
+          }
+        ]
+      },
+      {
+        "type": "event",
+        "label": "On Add Vendor",
+        "key": "onAddVendor"
+      }
+    ],
+    "context": [
+      {
+        "type": "static",
+        "values": [
+          {
+            "label": "Vendors",
+            "key": "vendors",
+            "type": "array"
+          },
+          {
+            "label": "Loading",
+            "key": "loading",
+            "type": "boolean"
+          },
+          {
+            "label": "Error",
+            "key": "error",
+            "type": "string"
+          },
+          {
+            "label": "Selected Vendor",
+            "key": "selectedVendor",
+            "type": "object"
+          }
+        ]
+      }
+    ]
+  }
+}
