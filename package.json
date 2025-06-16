@@ -4,6 +4,7 @@
   "description": "A simplified responsive wedding vendor management grid component for Budibase with Supabase integration",
   "main": "dist/plugin.min.js",
   "module": "dist/plugin.min.js",
+  "type": "module",
   "svelte": "src/index.js",
   "scripts": {
     "build": "rollup -c",
