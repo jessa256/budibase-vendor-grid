@@ -4,6 +4,7 @@
   "description": "A simplified responsive wedding vendor management grid component for Budibase with Supabase integration",
   "main": "dist/plugin.min.js",
   "module": "dist/plugin.min.js",
+  "type": "module",
   "svelte": "src/index.js",
   "scripts": {
     "build": "rollup -c",
@@ -61,6 +62,7 @@
     "@rollup/plugin-commonjs": "^25.0.7",
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@rollup/plugin-terser": "^0.4.4",
+    "@rollup/plugin-json": "^6.0.0",
     "@testing-library/jest-dom": "^6.4.2",
     "@testing-library/svelte": "^4.2.3",
     "eslint": "^8.57.0",
@@ -71,8 +73,13 @@
     "prettier-plugin-svelte": "^3.2.2",
     "rollup": "^4.13.0",
     "rollup-plugin-svelte": "^7.1.6",
+    "rollup-plugin-postcss": "^4.0.2",
+    "rollup-plugin-svg": "^2.0.0",
+    "rollup-plugin-polyfill-node": "^0.13.0",
+    "rollup-plugin-copy2": "^0.3.1",
     "svelte": "^4.2.12",
-    "svelte-jester": "^3.0.0"
+    "svelte-jester": "^3.0.0",
+    "tar": "^6.1.15"
   },
   "peerDependencies": {
     "svelte": "^4.0.0"
