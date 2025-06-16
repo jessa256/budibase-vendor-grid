@@ -1,0 +1,99 @@
+{
+  "type": "component",
+  "metadata": {},
+  "schema": {
+    "name": "wedding-vendor-grid",
+    "friendlyName": "Wedding Vendor Grid (Simplified)",
+    "description": "A simplified responsive grid component for displaying wedding vendors with dynamic card layouts, profile pictures, and booking status",
+    "icon": "GridThree",
+    "hasChildren": true,
+    "settings": [
+      {
+        "type": "dataProvider",
+        "label": "Vendor Data",
+        "key": "dataProvider",
+        "required": true
+      },
+      {
+        "type": "select",
+        "key": "cardHeight",
+        "label": "Card Height",
+        "defaultValue": "medium",
+        "options": [
+          {
+            "label": "Small",
+            "value": "small"
+          },
+          {
+            "label": "Medium", 
+            "value": "medium"
+          },
+          {
+            "label": "Large",
+            "value": "large"
+          }
+        ]
+      },
+      {
+        "type": "select",
+        "key": "cardStyle",
+        "label": "Card Style",
+        "defaultValue": "elevated",
+        "options": [
+          {
+            "label": "Elevated",
+            "value": "elevated"
+          },
+          {
+            "label": "Outlined",
+            "value": "outlined"
+          },
+          {
+            "label": "Flat",
+            "value": "flat"
+          }
+        ]
+      },
+      {
+        "type": "text",
+        "key": "defaultImage",
+        "label": "Default Profile Image URL",
+        "placeholder": "https://example.com/default-avatar.png",
+        "defaultValue": "https://pcmasfomyhqapaaaxzby.supabase.co/storage/v1/object/public/vendor-profile-pics/null_image.png"
+      },
+      {
+        "type": "event",
+        "label": "On Vendor Click",
+        "key": "onVendorClick",
+        "context": [
+          {
+            "label": "Vendor",
+            "key": "vendor"
+          }
+        ]
+      }
+    ],
+    "context": [
+      {
+        "type": "static",
+        "values": [
+          {
+            "label": "Vendors",
+            "key": "vendors",
+            "type": "array"
+          },
+          {
+            "label": "Loading",
+            "key": "loading",
+            "type": "boolean"
+          },
+          {
+            "label": "Error",
+            "key": "error",
+            "type": "string"
+          }
+        ]
+      }
+    ]
+  }
+}
