@@ -1,23 +1,25 @@
-import commonjs from "@rollup/plugin-commonjs"
-import resolve from "@rollup/plugin-node-resolve"
-import svelte from "rollup-plugin-svelte"
-import { terser } from "rollup-plugin-terser"
-import postcss from "rollup-plugin-postcss"
-import svg from "rollup-plugin-svg"
-import json from "rollup-plugin-json"
-import nodePolyfills from "rollup-plugin-polyfill-node"
-import copy from "rollup-plugin-copy2"
-import tar from "tar"
-import fs from "fs"
-import pkg from "./package.json"
-import crypto from "crypto"
-import { validate } from "@budibase/backend-core/plugins"
+const commonjs = require("@rollup/plugin-commonjs")
+const resolve = require("@rollup/plugin-node-resolve")
+const svelte = require("rollup-plugin-svelte")
+const { terser } = require("@rollup/plugin-terser")
+const postcss = require("rollup-plugin-postcss")
+const svg = require("rollup-plugin-svg")
+const json = require("@rollup/plugin-json")
+const nodePolyfills = require("rollup-plugin-polyfill-node")
+const copy = require("rollup-plugin-copy2")
+const tar = require("tar")
+const fs = require("fs")
+const pkg = require("./package.json")
+const crypto = require("crypto")
+const { validate } = require("@budibase/backend-core/plugins")
 
 const ignoredWarnings = [
   "unused-export-let",
   "css-unused-selector",
   "module-script-reactive-declaration",
   "a11y-no-onchange",
+  "a11y-click-events-have-key-events",
+  "a11y-no-static-element-interactions",
 ]
 
 // Custom plugin to clean the dist folder before building
@@ -77,7 +79,7 @@ const validateSchema = () => ({
   }
 })
 
-export default {
+module.exports = {
   input: "index.js",
   output: {
     sourcemap: process.env.ROLLUP_WATCH ? "inline" : false,
@@ -95,6 +97,9 @@ export default {
     clean(),
     svelte({
       emitCss: true,
+      compilerOptions: {
+        dev: process.env.ROLLUP_WATCH ? true : false,
+      },
       onwarn: (warning, handler) => {
         // Ignore some warnings
         if (!ignoredWarnings.includes(warning.code)) {
@@ -102,7 +107,10 @@ export default {
         }
       },
     }),
-    postcss(),
+    postcss({
+      extract: false,
+      minimize: true,
+    }),
     commonjs(),
     nodePolyfills(),
     resolve({
@@ -112,7 +120,14 @@ export default {
     }),
     svg(),
     json(),
-    terser(),
+    terser({
+      format: {
+        comments: false,
+      },
+      compress: {
+        drop_console: process.env.NODE_ENV === "production",
+      },
+    }),
     copy({
       assets: ["schema.json", "package.json"],
     }),
